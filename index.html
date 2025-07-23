@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhatsApp Flutuante com Formulário</title>
+<style>
+   .zap-popup {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 300px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    z-index: 1001;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+  }
+
+  .zap-header {
+    background-color: #075e54;
+    color: white;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .zap-header img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+
+  .zap-body {
+    padding: 15px;
+  }
+
+  .zap-message {
+    background: #e1ffc7;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+
+  #zap-form label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #333;
+  }
+
+  #zap-form input, #zap-form select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+
+  #zap-form button {
+    background-color: #25D366;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- BOTÃO FLUTUANTE WHATSAPP -->
+<div id="zap-toggle" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+  <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" style="width: 60px; cursor: pointer;" />
+</div>
+
+<!-- POPUP ESTILO ZAP -->
+<div class="zap-popup" style="display: none;">
+  <div class="zap-header">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/2048px-WhatsApp.svg.png" alt="avatar">
+    <div>
+      <strong>Tronsoft</strong><br>
+      <span>Online</span>
+    </div>
+  </div>
+  <div class="zap-body">
+    <div class="zap-message">
+      Olá, que tal um orçamento sem custo? Me informe seu nome, e-mail, telefone e segmento para iniciarmos uma conversa sem compromisso :)
+    </div>
+
+    <form id="zap-form">
+      <label>Seu nome*</label>
+      <input type="text" id="nome" required>
+
+      <label>Seu e-mail*</label>
+      <input type="email" id="email" required>
+
+      <label>Telefone*</label>
+      <input type="tel" id="telefone" maxlength="15" required>
+
+      <label>Segmento*</label>
+      <select id="segmento" required>
+        <option value="">Escolha um segmento</option>
+        <option>Restaurantes</option>
+        <option>Bar</option>
+        <option>Lanchonete</option>
+        <option>Sorveteria / Açaí</option>
+        <option>Cafeteria</option>
+        <option>Confeitaria</option>
+        <option>Distribuidora</option>
+        <option>Casa noturna</option>
+        <option>Outro de alimentação</option>
+      </select>
+
+      <button type="submit">Iniciar conversa</button>
+      <p id="zap-msg" style="font-size: 12px; color: red; margin-top: 5px;"></p>
+    </form>
+  </div>
+</div>
+
+<!-- SCRIPT COM BITRIX E FECHAMENTO AO CLICAR FORA -->
+<script>
+  const toggleBtn = document.getElementById("zap-toggle");
+  const popup = document.querySelector(".zap-popup");
+
+  // Mostrar e esconder popup
+  toggleBtn.addEventListener("click", () => {
+    popup.style.display = popup.style.display === "none" ? "block" : "none";
+  });
+
+  // Fecha ao clicar fora (desktop e mobile)
+  document.addEventListener("click", function (e) {
+    if (popup && !popup.contains(e.target) && !toggleBtn.contains(e.target)) {
+      popup.style.display = "none";
+    }
+  });
+
+  // Enviar para Bitrix
+  document.getElementById("zap-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const nome = document.getElementById("nome").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const telefone = document.getElementById("telefone").value.trim();
+    const segmento = document.getElementById("segmento").value;
+    const msg = document.getElementById("zap-msg");
+
+    if (!nome || !email || !telefone || !segmento) {
+      msg.textContent = "Preencha todos os campos obrigatórios.";
+      return;
+    }
+
+    msg.textContent = "";
+
+    const webhook = "https://tronsoft.bitrix24.com.br/rest/2218/islljmqw3t3yb0f5/crm.lead.add.json";
+
+    fetch(webhook, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fields: {
+          TITLE: `${nome} - Gestão Botão WhatsApp`,
+          NAME: nome,
+          EMAIL: [{ VALUE: email, VALUE_TYPE: "WORK" }],
+          PHONE: [{ VALUE: `+55${telefone.replace(/\D/g, "")}`, VALUE_TYPE: "WORK" }],
+          SOURCE_ID: "22",
+          SOURCE_DESCRIPTION: "Lead vindo do botão flutuante WhatsApp",
+          COMMENTS: `Segmento: ${segmento}`
+        }
+      })
+    })
+      .then(res => res.ok ? res.json() : Promise.reject(res))
+      .then(() => {
+        msg.style.color = "green";
+        msg.textContent = "Enviado com sucesso!";
+        setTimeout(() => popup.style.display = "none", 2000);
+      })
+      .catch(() => {
+        msg.style.color = "red";
+        msg.textContent = "Erro ao enviar. Tente novamente.";
+      });
+  });
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+<!-- Cabeçalho fixo com scroll dinâmico -->
+<header class="tronsoft-header" id="tronsoft-header">
+  <div class="tronsoft-header-container">
+    <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/branco-contorno-branco-AR03z3e9keCy43EN.png" alt="Logo Tronsoft" class="tronsoft-logo" />
+  </div>
+</header>
+
+<style>
+  .tronsoft-header{position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10000;
+    background-color: transparent;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    padding: 25px 30px;}.tronsoft-header.scrolled{background-color: #18ace2;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);}.tronsoft-header-container{max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;}.tronsoft-logo{height: 40px;}@media (max-width: 768px){.tronsoft-header-container{justify-content: center;}}</style>
+
+<script>
+  window.addEventListener('scroll', function (){const header = document.getElementById('tronsoft-header');
+    header.classList.toggle('scrolled', window.scrollY > 50);});
+</script>
+
+<!-- primeira sessao com popup form. -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Tronsoft | Sistema de Gestão</title>
+</head>
+<body>
+
+
+<!-- Este cod pra baixo é o sessao com form. -->
+
+<section id="tronsoft-lp">
+  <style>
+.ts-animado {
+  position: relative;
+  display: inline-block;
+  color: #fff;
+  font-weight: bold;
+  font-size: 38px;
+  padding-bottom: 5px;
+}
+
+.ts-animado .marca {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0.4em;
+  background: #ffeb3b;
+  opacity: 0.5;
+  z-index: 0;
+  animation: highlight 1s ease-in-out;
+}
+
+#segmento-texto {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes highlight {
+  from { width: 0; opacity: 0; }
+  to { width: 100%; opacity: 0.3; }
+}
+
+
+
+@media (max-width: 768px){#tronsoft-lp .ts-hero-text h1{font-size: 30px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 15px !important;}#tronsoft-lp .ts-hero-text p{font-size: 16px !important;
+    line-height: 1.4 !important;
+    margin-bottom: 25px !important;}}#tronsoft-lp .tronsoft-popup-box label{display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  margin-top: 1px;
+  color: #002c4b;}#tronsoft-lp{font-family: 'Ubuntu', sans-serif;}#tronsoft-lp .ts-hero{background-image: linear-gradient(to right, #000000, #11293e, #092945);
+      padding: 110px 40px; border-bottom-left-radius: 35px;
+  border-bottom-right-radius: 35px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);}#tronsoft-lp .ts-container{max-width: 1200px;
+      margin: auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 30px;}#tronsoft-lp .ts-hero-text{flex: 1;}#tronsoft-lp .ts-hero-text h1{font-size: 38px;
+      color: #18ace2;
+      margin-bottom: 20px;}#tronsoft-lp .ts-hero-text p{font-size: 18px;
+      color: #18ace2;
+      margin-bottom: 30px;}#tronsoft-lp .ts-btn{background-color: #ffffff;
+      color: #000;
+      font-weight: bold;
+      padding: 15px 30px;
+      font-size: 16px;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0px 5px #18ace2;}#tronsoft-lp .ts-hero-image{flex: 1;
+      text-align: center;}#tronsoft-lp .ts-hero-image img{max-width: 100%;
+      height: auto;}#tronsoft-lp .tronsoft-popup-overlay{display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10001; /* valor maior que o cabeçalho */
+  justify-content: center;
+  align-items: center;}#tronsoft-lp .tronsoft-popup-box{background: #fff;
+  padding: 40px 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh; /* Limita a altura total da caixa */
+  overflow-y: auto; /* Adiciona rolagem se passar da tela */
+  position: relative;
+  box-sizing: border-box;}#tronsoft-lp .tronsoft-popup-close{position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 22px;
+      color: #666;
+      cursor: pointer;
+      z-index: 2;}#tronsoft-lp h2,
+    #tronsoft-lp .tronsoft-popup-box p{margin-bottom: 10px;
+      font-size: 24px;
+      color: #002c4b;}#tronsoft-lp .tronsoft-popup-box p{font-size: 15px;
+      color: #333;}#tronsoft-lp input,
+    #tronsoft-lp select,
+    #tronsoft-lp textarea{width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      transition: border 0.2s ease;}#tronsoft-lp input:focus,
+    #tronsoft-lp select:focus,
+    #tronsoft-lp textarea:focus{outline: none;
+      border-color: #007bff;}#tronsoft-lp .ts-error{border: 1px solid red !important;}#tronsoft-lp .ts-success{border: 1px solid green !important;}#tronsoft-lp .tronsoft-popup-msg{font-size: 13px;
+      margin-top: 5px;
+      color: red;}#tronsoft-lp .tronsoft-popup-box button{background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-size: 15px;
+      width: 100%;
+      border-radius: 5px;
+      cursor: pointer;}@media (max-width: 768px){#tronsoft-lp .ts-hero{padding: 100px 20px;}#tronsoft-lp .ts-container{flex-direction: column;}#tronsoft-lp .ts-hero-text{text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;}}</style>
+
+  <div class="ts-hero">
+    <div class="ts-container">
+      <div class="ts-hero-text">
+
+        <h1>
+  Descubra o sistema de gestão ideal para o seu<br>
+  <span class="ts-static">negócio no setor </span>
+  <span class="ts-animado"><span class="marca"></span><span id="segmento-texto"></span></span>
+</h1>
+
+
+        <p>Um sistema completo para digitalizar sua gestão, com suporte humano 24h e integrações poderosas.</p>
+        <button class="ts-btn" id="tronsoft-open-popup">Fale com um especialista</button>
+      </div>
+      <div class="ts-hero-image">
+        <img src=" https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/boates-e-pubs-3-dWxvNxn5XxteOlEz.png" alt="Ilustração Tronsoft">
+      </div>
+    </div>
+  </div>
+
+  <div class="tronsoft-popup-overlay" id="tronsoft-popup-overlay">
+    <div class="tronsoft-popup-box">
+      <span class="tronsoft-popup-close" id="tronsoft-popup-close">&times;</span>
+      <h2><strong>Fale com um especialista</strong></h2>
+      <p>Preencha o formulário para atendimento personalizado:</p>
+
+   <label for="tronsoft-nome">Seu nome*</label>
+<input type="text" id="tronsoft-nome" />
+
+<label for="tronsoft-email">Seu e-mail*</label>
+<input type="email" id="tronsoft-email" />
+
+<label for="tronsoft-telefone">Telefone (DDD) + Número*</label>
+
+<input type="tel" id="tronsoft-telefone" maxlength="15" />
+
+
+
+<label for="tronsoft-segmento">Segmento*</label>
+<select id="tronsoft-segmento">
+  <option value="">Escolha um segmento</option>
+  <option>Restaurantes</option>
+  <option>Bar</option>
+  <option>Lanchonete</option>
+  <option>Sorveteria / Açaí</option>
+  <option>Cafeteria</option>
+  <option>Confeitaria</option>
+  <option>Distribuidora</option>
+  <option>Casa noturna</option>
+  <option>Outro de alimentação</option>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const segmentos = [
+      "Restaurantes",
+      "Bar",
+      "Lanchonete",
+      "Sorveteria",
+      "Cafeteria",
+      "Distribuidora",
+      "Casa noturna"
+    ];
+    let i = 0;
+    const textoEl = document.getElementById("segmento-texto");
+    const marcaEl = document.querySelector(".ts-animado .marca");
+
+    function trocarTexto() {
+      textoEl.textContent = segmentos[i];
+      marcaEl.classList.remove("marca"); // Reinicia animação
+      void marcaEl.offsetWidth;          // Força reflow
+      marcaEl.classList.add("marca");    // Aplica animação novamente
+      i = (i + 1) % segmentos.length;
+    }
+
+    trocarTexto();
+    setInterval(trocarTexto, 3000);
+  });
+</script>
+
+
+
+</select>
+
+<label for="tronsoft-detalhes">Detalhes sobre seu negócio*</label>
+<textarea id="tronsoft-detalhes" rows="4"></textarea>
+
+
+      <button id="tronsoft-enviar">Enviar</button>
+      <p class="tronsoft-popup-msg" id="tronsoft-popup-msg"></p>
+    </div>
+  </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function (){const overlay = document.getElementById("tronsoft-popup-overlay");
+
+    document.querySelectorAll(".abrir-formulario").forEach(function (btn){btn.addEventListener("click", function (e){e.preventDefault(); // Evita redirecionamentos se for <a href="#">
+        if (overlay){overlay.style.display = "flex";}});});
+
+    // Fecha se clicar fora da caixa
+    overlay?.addEventListener("click", function (e){if (e.target === overlay){overlay.style.display = "none";}});});
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function (){const overlay = document.getElementById("tronsoft-popup-overlay");
+
+    document.querySelectorAll(".abrir-formulario").forEach(function (btn){btn.addEventListener("click", function (e){e.preventDefault(); // Evita redirecionamentos se for <a href="#">
+        if (overlay){overlay.style.display = "flex";}});});
+
+    // Fecha se clicar fora da caixa
+    overlay?.addEventListener("click", function (e){if (e.target === overlay){overlay.style.display = "none";}});});
+</script>
+
+  <script>
+    (function (){const $ = (id) => document.getElementById(id);
+      const overlay = $("tronsoft-popup-overlay");
+
+     // Todos os botões que abrem o formulário
+document.querySelectorAll(".abrir-formulario, #tronsoft-open-popup").forEach((botao) =>{botao.addEventListener("click", () =>{overlay.style.display = "flex";});});
+
+
+      // Fecha ao clicar no botão X
+$("tronsoft-popup-close").onclick = () => overlay.style.display = "none";
+
+// Fecha ao clicar fora da caixa (overlay)
+overlay.addEventListener("click", function (e){if (e.target === overlay){overlay.style.display = "none";}});
+
+
+   $("tronsoft-telefone").addEventListener("input", function (){let value = this.value.replace(/\D/g, "");
+  if (value.length > 0) value = "(" + value;
+  if (value.length > 3) value = value.slice(0, 3) + ") " + value.slice(3);
+  if (value.length > 10) value = value.slice(0, 10) + "-" + value.slice(10);
+  this.value = value.slice(0, 15);});
+
+
+
+      $("tronsoft-enviar").addEventListener("click", function (){const nome = $("tronsoft-nome").value.trim();
+        const email = $("tronsoft-email").value.trim();
+        const telefone = $("tronsoft-telefone").value.trim();
+        const segmento = $("tronsoft-segmento").value;
+        const detalhes = $("tronsoft-detalhes").value.trim();
+        const msg = $("tronsoft-popup-msg");
+
+        const campos =[[$("tronsoft-nome"), nome],[$("tronsoft-email"), email],[$("tronsoft-telefone"), telefone],[$("tronsoft-segmento"), segmento],[$("tronsoft-detalhes"), detalhes],];
+
+        let erro = false;
+
+        campos.forEach(([campo, valor]) =>{if (!valor || (campo.id === "tronsoft-telefone" && telefone.length < 15)){campo.classList.remove("ts-success");
+            campo.classList.add("ts-error");
+            erro = true;}else{campo.classList.remove("ts-error");
+            campo.classList.add("ts-success");}});
+
+        if (erro){msg.textContent = "Preencha todos os campos corretamente.";
+          msg.style.color = "red";
+          return;}const webhook = "https://tronsoft.bitrix24.com.br/rest/2218/islljmqw3t3yb0f5/crm.lead.add.json";
+
+        fetch(webhook,{method: "POST",
+          headers:{"Content-Type": "application/json"},
+          body: JSON.stringify({fields:{TITLE: `${nome}- LP GESTÃO`,
+              NAME: nome,
+              EMAIL:[{VALUE: email, VALUE_TYPE: "WORK"}],
+
+             PHONE:[{VALUE: `+55${telefone.replace(/\D/g, "")}`, VALUE_TYPE: "WORK"}],
+
+
+              SOURCE_ID: "22",
+              SOURCE_DESCRIPTION: "Lead vindo da Landing Page",
+              COMMENTS: `Segmento: ${segmento}\nDetalhes: ${detalhes}`,},}),})
+          .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+
+  .then(() =>{msg.textContent = "****ENVIADO COM SUCESSO!****";
+  msg.style.color = "green";["tronsoft-nome", "tronsoft-email", "tronsoft-telefone", "tronsoft-segmento", "tronsoft-detalhes"].forEach((id) =>{$(id).value = "";
+    $(id).classList.remove("ts-success");});
+
+  // Aguarda 2 segundos e redireciona
+  setTimeout(() =>{window.location.href = "https://tronsoft.bitrix24.site/obrigado/";}, 2000);})
+
+
+          .catch(() =>{msg.textContent = "Erro ao enviar. Tente novamente.";
+            msg.style.color = "red";});});})();
+  </script>
+</section>
+
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tronsoft - Marcas Parceiras</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .logo-title {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+
+    .logo-subtitle {
+      text-align: center;
+      font-size: 1.5rem;
+      color: #555;
+      margin-bottom: 3rem;
+    }
+
+    .logo-carousel-section {
+      padding: 4rem;
+      background-color: #f9f9f9;
+      overflow: hidden;
+    }
+
+    .logo-carousel {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .logo-track {
+      display: flex;
+      width: calc(200px * 14); /* 7 logos x2 (repetição) */
+      animation: scroll 20s linear infinite;
+    }
+
+    .logo-item {
+      width: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 1rem;
+    }
+
+    .logo-item img {
+      max-width: 100%;
+      height: auto;
+      filter: grayscale(100%);
+      transition: filter 0.3s ease;
+    }
+
+    .logo-item img:hover {
+      filter: grayscale(0%);
+    }
+
+    @keyframes scroll {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <section class="logo-carousel-section">
+    <h2 class="logo-title">
+      <strong>Há mais de 27 anos</strong><br>
+      atuamos ao lado de empresas que transformaram seus processos e alcançaram mais eficiência.
+    </h2>
+    <p class="logo-subtitle">
+      Conheça algumas marcas que confiam na nossa experiência.
+    </p>
+
+    <div class="logo-carousel">
+      <div class="logo-track">
+        <!-- LOGOS REPETIDAS PARA LOOP -->
+        <div class="logo-item"><img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/bolos-caseiros-confeitaria-rosa-marrom-logotipo-6-YNq23Dx7j4ILaRXd.png" alt="Empresa 1"></div>
+        <div class="logo-item"><img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/bolos-caseiros-confeitaria-rosa-marrom-logotipo-5-dJob2l1LzpC4R4Zg.png" alt="Empresa 2"></div>
+        <div class="logo-item"><img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/bolos-caseiros-confeitaria-rosa-marrom-logotipo-4-dWxO5nN2z1T7neGo.png" alt="Empresa 3"></div>
+        <div class="logo-item"><img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/bolos-caseiros-confeitaria-rosa-marrom-logotipo-3-mjEGwz3NgXhv3VQl.png" alt="Empresa 4"></div>
+        <div class="logo-item"><img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/bolos-caseiros-confeitaria-rosa-marrom-logotipo-2-AE0rGEDnj7i2JgGD.png" alt="Empresa 5"></div>
+        <div class="logo-item"><img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/bolos-caseiros-confeitaria-rosa-marrom-logotipo-1-AQEZB35qaZSqgyZZ.png" alt="Empresa 6"></div>
+        <div class="logo-item"><img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/bolos-caseiros-confeitaria-rosa-marrom-logotipo-dJob2l1LQgiQrW0P.png" alt="Empresa 7"></div>
+
+        <!-- Repetição -->
+        <div class="logo-item"><img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/bolos-caseiros-confeitaria-rosa-marrom-logotipo-6-YNq23Dx7j4ILaRXd.png" alt="Empresa 1"></div>
+        <div class="logo-item"><img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/bolos-caseiros-confeitaria-rosa-marrom-logotipo-5-dJob2l1LzpC4R4Zg.png" alt="Empresa 2"></div>
+        <div class="logo-item"><img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/bolos-caseiros-confeitaria-rosa-marrom-logotipo-4-dWxO5nN2z1T7neGo.png" alt="Empresa 3"></div>
+        <div class="logo-item"><img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/bolos-caseiros-confeitaria-rosa-marrom-logotipo-3-mjEGwz3NgXhv3VQl.png" alt="Empresa 4"></div>
+        <div class="logo-item"><img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/bolos-caseiros-confeitaria-rosa-marrom-logotipo-2-AE0rGEDnj7i2JgGD.png" alt="Empresa 5"></div>
+        <div class="logo-item"><img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/bolos-caseiros-confeitaria-rosa-marrom-logotipo-1-AQEZB35qaZSqgyZZ.png" alt="Empresa 6"></div>
+        <div class="logo-item"><img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/bolos-caseiros-confeitaria-rosa-marrom-logotipo-dJob2l1LQgiQrW0P.png" alt="Empresa 7"></div>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Soluções Estratégicas</title>
+  <style>
+    /* Estilo isolado dentro do escopo .solucoes-wrapper */
+
+.botao-centralizado{text-align: center;
+  margin-top: 20px; /* ajuste opcional */}.botao-personalizado{background-color: #00cfff;
+    color: #000;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 30px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: center;
+    display: inline-block;
+    text-decoration: none;
+    transition: background-color 0.3s ease;}.botao-personalizado:hover{background-color: #00b8e6;
+  color: #fff;}/* ate aqui */
+
+.solucoes-wrapper{font-family: 'Segoe UI', sans-serif;
+      background: #d9d2c3;
+      padding: 2rem;
+border-top-left-radius: 32px;
+  border-top-right-radius: 32px;
+  overflow: hidden;}.solucoes-wrapper .solucoes-section{max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;}.solucoes-wrapper .solucoes-header{text-align: center;
+      margin-bottom: 2rem;}.solucoes-wrapper .solucoes-header h2{font-size: 23px;
+      font-weight: 800;
+      color: #011d2c;}.solucoes-wrapper .solucoes-header p{margin-top: 0.5rem;
+      color: #333;
+      font-size: 20px;}.solucoes-wrapper .solucoes-grid{display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 1.5rem;}.solucoes-wrapper .solucao-box{background: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      border: 1px solid #e0e0e0;}.solucoes-wrapper .solucao-box h3{font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #011d2c;}.solucoes-wrapper .solucao-box p{font-size: 0.95rem;
+      color: #11293e;
+      line-height: 1.5;}.solucoes-wrapper .accordion{display: none;
+      flex-direction: column;
+      gap: 1rem;}.solucoes-wrapper .accordion-item{border-bottom: 1px solid #11293e;}.solucoes-wrapper .accordion-header{display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 1rem 0;}.solucoes-wrapper .accordion-content{display: none;
+      padding-bottom: 1rem;
+      color: #11293e;
+      font-size: 0.95rem;}.solucoes-wrapper .accordion-content.active{display: block;}.solucoes-wrapper .accordion-header::after{content: "⌄";
+      transition: transform 0.2s ease;}.solucoes-wrapper .accordion-header.active::after{transform: rotate(180deg);}
+
+@media (max-width: 768px){.solucoes-wrapper 
+
+.solucoes-grid{display: none;}.solucoes-wrapper .accordion{display: flex;}.solucoes-wrapper .accordion-header{color: ##11293e; /* Altere aqui para a cor que quiser */}}</style>
+</head>
+<body>
+
+<div class="solucoes-wrapper">
+  <section class="solucoes-section">
+    <div class="solucoes-header">
+      <h2>Soluções estratégicas para sua empresa decolar.</h2>
+      <p>Tronsoft reúne 6 módulos totalmente integrados que otimizam sua gestão de ponta a ponta.</p>
+    </div>
+
+    <!-- Desktop Grid -->
+    <div class="solucoes-grid">
+      <div class="solucao-box">
+        <h3>PDV-Frente de Caixa</h3>
+        <p>Transforme o atendimento ao cliente e otimize o processo de vendas com um ERP que facilita o registro de trasações, garantindo um serviço eficiente e um controle de vendas sem falhas.</p>
+      </div>
+      <div class="solucao-box">
+        <h3>Vendas e NF-e</h3>
+        <p>Com nossos softwares, oferecemos recursos avançados que incluem controle de estoque, produção e vendas.
+
+Além disso, você pode emitir documentos fiscais (NFC-e, SPED E XML) e acessar relatórios completos que auxiliam na tomada de decisões.</p>
+      </div>
+      <div class="solucao-box">
+        <h3>Finanças</h3>
+        <p>Controle seu planejamento financeiro com conciliação automática, relatórios e integração bancária.</p>
+      </div>
+      <div class="solucao-box">
+        <h3>Estoque e produção</h3>
+        <p>Gerencie estoque e produção com eficiência, garantindo operações otimizadas.</p>
+      </div>
+      <div class="solucao-box">
+        <h3>Painel do Contador</h3>
+        <p>Obrigações tributárias em dia com envio de documentos em tempo real para seu contador.</p>
+      </div>
+      <div class="solucao-box">
+        <h3>Retaguarda WEB</h3>
+        <p>Acesse de qualquer lugar, a qualquer hora, com qualquer dispositivo. Gerencie dados na nuvem com recursos como faturamento, controle de estoque, contas a pagar, fechamento de caixa e pesquisa de satisfação.</p>
+      </div>
+    </div>
+
+
+
+
+    <!-- Mobile Accordion -->
+    <div class="accordion">
+      <div class="accordion-item">
+     <div class="accordion-header" style="color: #11293e;">PDV-Frente de Caixa</div>
+        <div class="accordion-content">
+         Transforme o atendimento ao cliente e otimize o processo de vendas com um ERP que facilita o registro de trasações, garantindo um serviço eficiente e um controle de vendas sem falhas.
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header" style="color: #11293e;">Vendas e NF-e</div>
+        <div class="accordion-content">
+         Com nossos softwares, oferecemos recursos avançados que incluem controle de estoque, produção e vendas. Além disso, você pode emitir documentos fiscais (NFC-e, SPED E XML) e acessar relatórios completos que auxiliam na tomada de decisões.
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header" style="color: #11293e;">Finanças</div>
+        <div class="accordion-content">
+          Controle seu planejamento financeiro com conciliação automática, relatórios e integração bancária.
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header" style="color: #11293e;">Estoque e produção</div>
+        <div class="accordion-content">
+          Gerencie estoque e produção com eficiência, garantindo operações otimizadas.
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header" style="color: #11293e;">Painel do Contador</div>
+        <div class="accordion-content">
+          Obrigações tributárias em dia com envio de documentos em tempo real para seu contador.
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header" style="color: #11293e;">Retaguarda WEB</div>
+        <div class="accordion-content">
+          Acesse de qualquer lugar, a qualquer hora, com qualquer dispositivo. Gerencie dados na nuvem com recursos como faturamento, controle de estoque, contas a pagar, fechamento de caixa e pesquisa de satisfação.
+        </div>
+      </div>
+    </div>
+<div class="botao-centralizado">
+  <a href="#" class="botao-personalizado abrir-formulario">Quero conhecer</a>
+</div>
+
+
+  </section>
+</div>
+
+<script>
+  // Escopo isolado para evitar interferência
+  (function (){const wrapper = document.querySelector('.solucoes-wrapper');
+    if (!wrapper) return;
+
+    const headers = wrapper.querySelectorAll('.accordion-header');
+
+    headers.forEach(header =>{header.addEventListener('click', () =>{const content = header.nextElementSibling;
+        const isActive = content.classList.contains('active');
+
+        wrapper.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('active'));
+        wrapper.querySelectorAll('.accordion-header').forEach(h => h.classList.remove('active'));
+
+        if (!isActive){content.classList.add('active');
+          header.classList.add('active');}});});})();
+</script>
+
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Apptron - Recursos para Food Service</title>
+  <style>
+    .apptron-wrapper .feature-subtitle {
+      font-size: 20px;
+      color: #000;
+      margin-bottom: 15px;
+    }
+
+    .apptron-wrapper .bloco-recursos {
+      background-color: #d9d2c3;
+      padding: 60px 15px 80px 15px;
+    }
+
+    .apptron-wrapper .titulo-descricao-food {
+      text-align: center;
+      margin-bottom: 0px;
+    }
+
+    .apptron-wrapper .destaque-food {
+      color: #000;
+    }
+
+    .apptron-wrapper .titulo-descricao-food p {
+      font-size: 23px;
+      color: #555;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .apptron-wrapper .features-section {
+      display: flex;
+      flex-direction: column;
+      gap: 60px;
+      background-color: #d9d2c3;
+      padding-bottom: 80px;
+      padding-top: 0;
+      border-bottom-left-radius: 40px;
+      border-bottom-right-radius: 40px;
+    }
+
+    .apptron-wrapper .feature-block {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 50px;
+      flex-wrap: wrap;
+    }
+
+    .apptron-wrapper .feature-block.reverse {
+      flex-direction: row-reverse;
+    }
+
+    .apptron-wrapper .feature-text {
+      max-width: 500px;
+    }
+
+    .apptron-wrapper .feature-text h2 {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .apptron-wrapper .feature-text p {
+      font-size: 18px;
+      color: #000;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .apptron-wrapper .feature-text b {
+      font-weight: 700;
+    }
+
+    .apptron-wrapper .feature-image img {
+      max-width: 400px;
+      border-radius: 12px;
+    }
+
+    .apptron-wrapper .btn-cta {
+      background-color: #00cfff;
+      color: #000;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 30px;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-align: center;
+      display: inline-block;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .apptron-wrapper .btn-cta:hover {
+      background-color: #00b8e6;
+    }
+
+    @media (max-width: 768px) {
+      .apptron-wrapper .features-section {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .apptron-wrapper .feature-block {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+      }
+
+      .apptron-wrapper .feature-text {
+        text-align: left;
+        padding: 0 10px;
+      }
+
+      .apptron-wrapper .feature-image {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .apptron-wrapper .feature-image img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .apptron-wrapper .btn-cta {
+        display: block;
+        margin: 20px auto 0 auto;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BLOCO APPTRON -->
+  <div class="apptron-wrapper">
+    <section class="bloco-recursos">
+      <div class="titulo-descricao-food">
+        <h2>
+          <strong>Seu negócio de food service pronto para crescer com nossos</strong>
+          <span class="destaque-food"><strong>recursos!</strong></span>
+        </h2>
+        <p>Detalhamos como cada recurso pode impulsionar suas vendas!</p>
+      </div>
+    </section>
+
+    <section class="features-section">
+
+      <!-- PDV -->
+      <div class="feature-block">
+        <div class="feature-image">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/e7a05333-8ee8-4916-aaa8-b7f1e6015c08-AE0rQ6KQopUoPPeB.png" alt="PDV">
+        </div>
+        <div class="feature-text">
+          <h2>PDV Completo para Todos os Cenários de Atendimento</h2>
+          <h3 class="feature-subtitle">Compatível com ambientes offline e online, com integração total ao salão, cozinha, delivery e dispositivos móveis.</h3>
+          <p><b>Integração com Cozinha e Salão:</b> Os pedidos vão direto para a tela da cozinha, reduzindo erros e acelerando o atendimento.</p>
+          <p><b>Comanda Eletrônica e PDV Móvel:</b> Garçons registram pedidos pelo celular ou tablet.</p>
+          <p><b>Integração com Balanças:</b> Ideal para vendas por peso: o sistema já reconhece o valor final.</p>
+          <p><b>Frente de Caixa Ágil e Completa:</b> Atenda com velocidade e controle total.</p>
+          <p><b>Funciona Online e Offline:</b> Com ou sem internet, seu negócio continua vendendo.</p>
+          <p><b>Integração com Maquininhas:</b> Aceite pagamentos direto pelo PDV com maquininhas integradas.</p>
+          <a href="#" class="btn-cta abrir-formulario">Quero esse PDV</a>
+        </div>
+      </div>
+
+      <!-- TronPOS -->
+      <div class="feature-block reverse">
+        <div class="feature-image">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/design-sem-nome-A3Q76RNvBMTa7DVO.png" alt="TronPOS">
+        </div>
+        <div class="feature-text">
+          <h2>TronPOS: Maquininha Smart com PDV Completo Integrado</h2>
+          <h3 class="feature-subtitle">Finalize pedidos, acesse o cardápio e receba pagamentos direto na maquininha.</h3>
+          <p><b>Cardápio Completo na Tela:</b> Visualize e selecione os itens direto da maquininha.</p>
+          <p><b>Finalização do Pedido no PDV Móvel:</b> Finalize pedidos na TronPOS.</p>
+          <p><b>Integração com Comandas:</b> Acesse comandas, adicione pedidos ou feche a conta.</p>
+          <p><b>Pedidos Direto para a Cozinha:</b> Sem papel, sem intermediários.</p>
+          <p><b>Aceita Todos os Pagamentos:</b> Cartão, Pix, débito, crédito e QR Code.</p>
+          <a href="#" class="btn-cta abrir-formulario">Testar o POS</a>
+        </div>
+      </div>
+
+      <!-- TronComanda -->
+      <div class="feature-block">
+        <div class="feature-image">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/c9be2a1e-1398-4864-a52e-47d3721a4a9f-YNq2QRE6oWir6pVO.png" alt="TronComanda">
+        </div>
+        <div class="feature-text">
+          <h2>TronComanda: Mais Agilidade e Experiência no Atendimento</h2>
+          <h3 class="feature-subtitle">Transforme o atendimento com uma comanda eletrônica moderna e intuitiva.</h3>
+          <p><b>Mapa de Mesas Interativo:</b> Veja mesas ocupadas, disponíveis e em atendimento.</p>
+          <p><b>Botão “Chamar Garçom”:</b> Clientes solicitam atendimento sem acenar.</p>
+          <p><b>Autoatendimento por Tablet ou QR Code:</b> Cliente faz pedidos do próprio celular.</p>
+          <p><b>Pedidos Direto na Cozinha:</b> Redução de erros e agilidade na produção.</p>
+          <p><b>Menu com Promoções:</b> Destaque combos e ofertas no cardápio digital.</p>
+          <p><b>Comanda Atrelada:</b> Controle por mesa ou cliente.</p>
+          <a href="#" class="btn-cta abrir-formulario">Testar a Comanda Eletrônica</a>
+        </div>
+      </div>
+
+      <!-- Delivery + Gestão -->
+      <div class="feature-block reverse">
+        <div class="feature-image">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/design-sem-nome-1-YKblGRpn87uaMGVb.png" alt="Delivery">
+        </div>
+        <div class="feature-text">
+          <h2>Delivery Integrado e Inteligente para o Seu Negócio</h2>
+          <h3 class="feature-subtitle">Cardápio digital, atendimento automático e fidelização de clientes.</h3>
+          <p><b>Atendimento Automático via WhatsApp:</b> Robô que recebe pedidos 24h por dia.</p>
+          <p><b>Cardápio Digital Interativo:</b> Imagens, descrição e pedido em poucos toques.</p>
+          <p><b>Pagamento Rápido:</b> Pix, cartão, tudo direto no cardápio.</p>
+          <p><b>Campanhas de Marketing:</b> Promoções automáticas para aumentar vendas.</p>
+          <p><b>Pedidos no PDV:</b> Tudo centralizado e automatizado.</p>
+          <a href="#" class="btn-cta abrir-formulario">Quero vender online</a>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+</body>
+</html>
+
+
+
+
+<!-- por que escolher a tronsoft -->
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Benefícios - Tronsoft</title>
+  <style>
+    /* Seção com fundo branco e espaço geral */
+    .tron-benefits-section {
+      background-color: #fff;
+      padding: 60px 40px;
+      box-sizing: border-box;
+    }
+
+    /* Cabeçalho */
+    .tron-benefits-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .tron-benefits-header h2 {
+      font-size: 28px;
+      margin: 0;
+      color: #222;
+    }
+
+    .tron-benefits-header p {
+      font-size: 20px;
+      color: #000000;
+      margin-top: 10px;
+    }
+
+    /* Container de benefícios com respiro nas laterais */
+ .tron-benefits-container {
+  max-width: 1500px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* <- CORRIGIDO */
+  gap: 20px;
+  padding: 0 100px;
+}
+
+
+
+    /* Cada benefício */
+    .tron-benefit {
+      background-color: #e0f7fa;
+      border-radius: 12px;
+      width: calc((100% - 40px) / 4);
+      padding: 30px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s;
+    }
+
+    .tron-benefit:hover {
+      transform: translateY(-5px);
+    }
+
+    .tron-benefit img {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+    }
+
+    .tron-benefit p {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.4;
+      margin: 0;
+      text-align: left;
+    }
+
+    /* Animação do texto "Online"/"Offline" */
+    .status-text {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 18px;
+      overflow: hidden;
+    }
+
+    .status-text span {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    .status-text .online {
+      animation: toggleOnline 5s infinite;
+    }
+
+    .status-text .offline {
+      animation: toggleOffline 5s infinite;
+    }
+
+    @keyframes toggleOnline {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    @keyframes toggleOffline {
+      0%, 50% { opacity: 0; }
+      51%, 100% { opacity: 1; }
+    }
+
+    /* Ícones trocando junto com o texto */
+    .icon-switch {
+      position: relative;
+      width: 36px;
+      height: 36px;
+    }
+
+    .icon-switch .icon {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      opacity: 0;
+    }
+
+    .icon-switch .icon-online {
+      animation: toggleOnline 5s infinite;
+    }
+
+    .icon-switch .icon-offline {
+      animation: toggleOffline 5s infinite;
+    }
+
+    /* Responsivo */
+    @media (max-width: 992px) {
+      .tron-benefit {
+        width: calc(50% - 20px);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .tron-benefit {
+        width: 100%;
+        flex-direction: row;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="tron-benefits-section">
+    <div class="tron-benefits-header">
+      <h2><strong>Por que escolher a Tronsoft?</strong></h2>
+      <p>Descubra os principais benefícios da nossa solução para o seu negócio</p>
+    </div>
+
+    <div class="tron-benefits-container">
+      
+      <!-- BENEFÍCIO COM ANIMAÇÃO -->
+      <div class="tron-benefit animated-benefit">
+        <div class="icon-switch">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/j-1-AR038PGDKEi7p9eQ.png" alt="Online" class="icon icon-online">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/j-AGBbQRxWKMF7EQ7Q.png" alt="Offline" class="icon icon-offline">
+        </div>
+        <p>
+          Funcionamento<br>
+          100% <span class="status-text">
+            <span class="online"><strong>Online</strong></span>
+            <span class="offline"><strong>Offline</strong></span>
+          </span>
+        </p>
+      </div>
+
+      <!-- OUTROS BENEFÍCIOS -->
+      <div class="tron-benefit">
+        <img src="https://cdn.prod.website-files.com/67c865c833d64c3ec73f47a9/680f94d2ba1123a11e298171_cloud_upload.svg" alt="Ícone 2">
+        <p>Atualizações<br>automáticas na nuvem</p>
+      </div>
+      <div class="tron-benefit">
+        <img src="https://cdn.prod.website-files.com/67c865c833d64c3ec73f47a9/67fd1d2a92f1e54747892fe3_support_agent.svg" alt="Ícone 3">
+        <p>Suporte<br> humanizado 24/7</p>
+      </div>
+      <div class="tron-benefit">
+        <img src="https://cdn.prod.website-files.com/67c865c833d64c3ec73f47a9/67fd1d237433d696d1aca262_trending_up.svg" alt="Ícone 4">
+        <p>Agiliza e<br>potencializa suas vendas</p>
+      </div>
+      <div class="tron-benefit">
+        <img src="https://cdn.prod.website-files.com/67c865c833d64c3ec73f47a9/67f55825b46f98a48ad5e3ca_mood.svg" alt="Ícone 5">
+        <p>Aumenta a satisfação e o <br>ticket médio</p>
+      </div>
+      <div class="tron-benefit">
+        <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/j-2-m6LbQpN3lxfXbrxp.png" alt="Ícone 6">
+        <p>Reduza erros e<br>economize dinheiro</p>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
+
+
+
+<!-- O que dizem sobre nos -->
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prova Social - Depoimentos</title>
+  <style>
+    .prova-social {
+      background: #ffffff;
+      padding: 60px 20px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .prova-social h2 {
+      text-align: center;
+      font-size: 32px;
+      color: #001f3f;
+      margin-bottom: 40px;
+    }
+
+    .depoimentos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 60px;
+    }
+
+    .card-depoimento {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+      max-width: 400px;
+      flex: 1 1 300px;
+      text-align: center;
+    }
+
+    .stars {
+      color: #f2b01e;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .descricao {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 12px;
+    }
+
+    .autor {
+      font-weight: bold;
+      color: #007b83;
+    }
+
+    .bloco-video {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    .bloco-video .texto {
+      max-width: 500px;
+    }
+
+    .bloco-video h3 {
+      font-size: 28px;
+      color: #001f3f;
+      margin-bottom: 15px;
+    }
+
+    .bloco-video p {
+      font-size: 16px;
+      color: #444;
+      margin-bottom: 20px;
+    }
+
+    .video {
+      flex: 1 1 350px;
+      max-width: 500px;
+    }
+
+    .video iframe {
+      width: 100%;
+      height: 280px;
+      border-radius: 12px;
+      border: none;
+    }
+
+    @media (max-width: 768px) {
+      .bloco-video {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .bloco-video .texto,
+      .video {
+        max-width: 100%;
+      }
+
+      .bloco-video iframe {
+        height: 220px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <section class="prova-social">
+    <h2><strong>O que dizem nossos clientes</strong></h2>
+
+    <div class="depoimentos">
+      <div class="card-depoimento">
+        <div class="stars">★★★★★</div>
+        <div class="descricao">Uma ótima empresa. O processo do meu serviço melhorou bastante, com o PDV e comanda eletrônica.</div>
+        <div class="autor">Junior Souza</div>
+      </div>
+
+      <div class="card-depoimento">
+        <div class="stars">★★★★★</div>
+        <div class="descricao">Soft excelente, atende perfeitamente as necessidades de restaurante.</div>
+        <div class="autor">Mauro Lucas</div>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>
+
+
+
+
+<!-- ilha -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Case de Sucesso - Grupo Ilha</title>
+  <style>
+    .btn-verde {
+      display: inline-block;
+      background: linear-gradient(to right, #18ace2, #18ace2);
+      color: #001f3f;
+      padding: 12px 30px;
+      border-radius: 30px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .legenda-video {
+      font-size: 14px;
+      color: #666;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .caso-sucesso {
+      background-color: #ffffff;
+      color: #0a1f44;
+      padding: 40px 20px;
+      font-family: Arial, sans-serif;
+    }
+
+    .caso-sucesso .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .caso-sucesso .section {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+
+    .caso-sucesso .text-block {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .caso-sucesso .text-block h2 {
+      font-size: 28px;
+      margin-bottom: 16px;
+    }
+
+    .caso-sucesso .text-block p {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .caso-sucesso .benefits {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .caso-sucesso .benefits li {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .caso-sucesso .benefits li::before {
+      content: '✔️';
+      margin-right: 10px;
+      color: green;
+    }
+
+    .caso-sucesso .button {
+      display: inline-block;
+      background-color: #00d084;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      padding: 14px 40px;
+      border-radius: 40px;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+      text-align: center;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+
+    .caso-sucesso .button:hover {
+      background-color: #00b06f;
+    }
+
+    .caso-sucesso .button-wrapper {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .caso-sucesso .video {
+      flex: 1;
+      min-width: 300px;
+      max-width: 600px;
+      aspect-ratio: 16/9;
+      background-color: black;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .caso-sucesso .video iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    @media (max-width: 768px) {
+      .caso-sucesso .section {
+        flex-direction: column-reverse;
+        align-items: stretch;
+      }
+
+      .caso-sucesso .text-block h2 {
+        font-size: 24px;
+      }
+
+      .caso-sucesso .text-block p,
+      .caso-sucesso .benefits li {
+        font-size: 16px;
+      }
+
+      .btn-verde,
+      .btn-azul {
+        width: 100%;
+        text-align: center;
+      }
+
+      .caso-sucesso .button-wrapper {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="caso-sucesso">
+    <div class="container">
+      <div class="section">
+        <div class="text-block">
+          <h2>Grupo Ilha: Uma Parceria de Sucesso</h2>
+          <p>Há mais de 20 anos, os restaurantes do Grupo Ilha confiam na Tronsoft para gerenciar e otimizar suas operações. <strong>Resultados alcançados:</strong></p>
+          <ul class="benefits">
+            <li>Aumento de Vendas com Touch Screen e Comanda Eletrônica</li>
+            <li>Controle total de vendas, caixa e PDV</li>
+            <li>Gestão completa de estoque com ficha técnica e finanças</li>
+            <li>Suporte técnico rápido e eficiente, 24/7, sempre que precisam</li>
+          </ul>
+          <div class="button-wrapper">
+            <a href="#" class="btn-verde abrir-formulario">Quero resultados assim!</a>
+          </div>
+        </div>
+
+        <div class="video">
+          <iframe src="https://www.youtube.com/embed/8rYmRZsROYc" title="Benefícios Tronsoft" allowfullscreen></iframe>
+          <p class="legenda-video">Confira o vídeo completo sobre essa parceria de sucesso</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const overlay = document.getElementById("tronsoft-popup-overlay");
+
+      document.querySelectorAll(".abrir-formulario").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault(); // Evita redirecionamentos se for <a href="#">
+          if (overlay) {
+            overlay.style.display = "flex";
+          }
+        });
+      });
+
+      // Fecha se clicar fora da caixa
+      overlay?.addEventListener("click", function (e) {
+        if (e.target === overlay) {
+          overlay.style.display = "none";
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
+
+
+
+<!-- planos -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Planos e Preços - Tronsoft</title>
+  <style>
+    .pricing-section {
+      text-align: center;
+      padding: 60px 20px;
+      background: #11293e;
+      border-top-left-radius: 32px;
+      border-top-right-radius: 32px;
+      border-bottom-left-radius: 32px;
+      border-bottom-right-radius: 32px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .pricing-section h2 {
+      font-size: 32px;
+      margin-bottom: 40px;
+      color: #fff;
+    }
+
+    .pricing-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      background: #fafafa;
+      border-radius: 10px;
+      padding: 30px 25px;
+      width: 300px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .pricing-card h3 {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .pricing-card ul {
+      text-align: left;
+      padding-left: 0;
+      list-style: none;
+      margin-bottom: 20px;
+    }
+
+    .pricing-card li {
+      margin: 8px 0;
+    }
+
+    .price {
+      font-size: 24px;
+      margin: 10px 0;
+    }
+
+    .price strong {
+      font-size: 32px;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: auto;
+      padding: 10px 20px;
+      background-color: #18ace2;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 20px;
+      font-weight: bold;
+    }
+
+    input[type="text"] {
+      padding: 8px 10px;
+      margin: 10px 0 20px;
+      width: 100%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="pricing-section">
+    <h2><strong>Mensalidade que <span style="color: #18ace2;">cabe no seu bolso</span></strong></h2>
+
+    <div class="pricing-cards">
+      <!-- Plano Grátis -->
+      <div class="pricing-card">
+        <h3>Teste Grátis</h3>
+        <ul>
+          <li>✓ Suporte 24h humanizado</li>
+          <li>✓ PDV/Frente de Caixa + Mesas e Balcão</li>
+          <li>✓ Ficha Técnica</li>
+          <li>✓ Controle de Estoque</li>
+          <li>✓ Controle Financeiro</li>
+          <li>✓ Comanda Digital</li>
+          <li>✓ Maquininha POS</li>
+          <li>✓ Fiscal + NFC-e</li>
+          <li>✓ KDS</li>
+          <li>✓ Integração com Ifood</li>
+          <li>✓ Pagamento Online</li>
+          <li>✓ Sistema de Delivery Completo</li>
+        </ul>
+        <p class="price">R$ <strong>0,00</strong> <span>/mês</span></p>
+        <p class="note">* Primeiro Mês </p>
+        <a href="#" class="btn abrir-formulario">Teste Grátis</a>
+      </div>
+
+      <!-- Estimativa baseada no faturamento -->
+      <div class="pricing-card">
+        <h3>Ainda vende pouco?</h3>
+        <ul>
+          <li>✓ Temos um desconto especial para você!</li>
+          <li>✓ Com todos os benefícios inclusos</li>
+        </ul>
+        <label for="faturamento">Digite o faturamento esperado</label>
+        <input type="text" id="faturamento" placeholder="Ex: R$ 2.000,00">
+        <a href="#" class="btn abrir-formulario">Calcular e Testar Grátis</a>
+        <p class="note">* Primeiro Mês</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('faturamento').addEventListener('keydown', function(e){
+      if (e.key === 'Enter'){
+        e.preventDefault();
+        const popupBtn = this.closest('.pricing-card').querySelector('.abrir-formulario');
+        if (popupBtn) popupBtn.click();
+      }
+    });
+  </script>
+
+</body>
+</html>
+
+
+<!-- quem somos -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quem Somos - Tronsoft</title>
+  <style>
+    .tron-func-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .tron-func-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tron-func-item img {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .quem-somos-wrapper {
+      background: #d9d2c3;
+      padding: 60px 20px;
+      margin-top: -40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .quem-somos {
+      font-family: 'Poppins', sans-serif;
+      color: #000000;
+      background: transparent;
+      border-radius: 14px;
+      overflow: hidden;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .texto {
+      flex: 1;
+      padding: 40px;
+      min-width: 300px;
+    }
+
+    .texto h2 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .texto .linha {
+      width: 50px;
+      height: 4px;
+      background: #00e1ff;
+      margin-bottom: 20px;
+    }
+
+    .texto p {
+      margin-bottom: 15px;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .contato {
+      margin-top: 20px;
+    }
+
+    .contato p {
+      margin-bottom: 12px;
+    }
+
+    .contato i {
+      margin-right: 8px;
+      color: #00e1ff;
+    }
+
+    .mapa {
+      margin-top: 15px;
+      padding: 10px 16px;
+      border: 1px solid #18ace2;
+      background: transparent;
+      color: #000000;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .imagem {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .imagem img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .dados {
+      display: flex;
+      justify-content: space-around;
+      background: #d9d2c3;
+      color: #000000;
+      padding: 30px 20px;
+      flex-wrap: wrap;
+      text-align: center;
+    }
+
+    .dados div {
+      margin: 10px 0;
+      min-width: 200px;
+    }
+
+    .dados strong {
+      font-size: 24px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .certificacoes {
+      background: #d9d2c3;
+      text-align: center;
+      padding: 30px 10px;
+      color: #000;
+    }
+
+    .certificacoes h3 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .selos {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .selos img {
+      height: 50px;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quem-somos-wrapper">
+    <section class="quem-somos">
+      <div class="container">
+        <div class="texto">
+          <h2>Muito prazer,<br><strong>somos a Tronsoft</strong></h2>
+          <div class="linha"></div>
+          <p>
+            A Tronsoft, com mais de <strong>27 anos de sólida atuação, </strong>
+            destaca-se como uma empresa especializada em desenvolvimento de sistemas.
+          </p>
+          <p>
+            Nosso compromisso é ajudar na otimização dos processos de nossos clientes, visando maximizar 
+            os lucros e facilitar a gestão financeira, operacional, estoque e vendas.
+          </p>
+
+          <div class="contato">
+            <div class="tron-func-item">
+              <img src="https://static.vecteezy.com/system/resources/thumbnails/016/416/779/small_2x/phone-call-icon-in-flat-design-style-telephone-signs-illustration-png.png" alt="Telefone">
+              <p><strong>Telefone/WhatsApp</strong><br>0800 600 1531</p>
+            </div>
+
+            <div class="tron-func-item">
+              <img src="https://cdn-icons-png.flaticon.com/512/6387/6387963.png" alt="localização">
+              <p><strong>Escritórios da Tronsoft:</strong><br>
+                <strong>Matriz:</strong> Vitória (ES): Av. Adalberto Simão Nader, 1085, Bairro República, 29070-053<br>
+                <strong>Filial:</strong> Porto Alegre (RS): Avenida Padre Cacique 320, Térreo Bloco A - 90810-24
+              </p>
+            </div>
+
+            <a href="https://tronsoft.com.br/" class="mapa" target="_blank">Saiba mais da Tronsoft</a>
+          </div>
+        </div>
+
+        <div class="imagem">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/soluassapso-para-bares-e-restuantes-e-verejo-2-YD0lR40xQEHZap0a.png" alt="imagem da tronsoft">
+        </div>
+      </div>
+
+      <div class="dados">
+        <div><strong>27 anos</strong><br>De experiência no mercado regional</div>
+        <div><strong>+ de 6.500</strong><br>De clientes atendidos em todo o<br>estado do Brasil</div>
+        <div><strong>+ de 9,0</strong><br>Em notas de avaliação de nossos<br>próprios clientes</div>
+      </div>
+
+      <div class="certificacoes">
+        <h3>Selos de certificação</h3>
+        <div class="selos">
+          <img src="https://images.tcdn.com.br/img/editor/up/709050/Selo.png" alt="Reclame Aqui">
+          <img src="https://abes.com.br/wp-content/uploads/2021/11/logo_abes_tagline_horizontal_verde-amarelo.png" alt="ABES">
+        </div>
+      </div>
+    </section>
+  </div>
+
+</body>
+</html>
