@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WhatsApp Flutuante com Formulário</title>
+  <title>Tronsoft | Gestão Para Food</title>
 <style>
    .zap-popup {
     position: fixed;
@@ -212,10 +212,31 @@
     background-color: transparent;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     padding: 25px 30px;}.tronsoft-header.scrolled{background-color: #18ace2;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);}.tronsoft-header-container{max-width: 1200px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);}
+  
+  
+ .tronsoft-header-container{
+max-width: 1200px;
+ width: 100%;
     margin: 0 auto;
     display: flex;
-    align-items: center;}.tronsoft-logo{height: 40px;}@media (max-width: 768px){.tronsoft-header-container{justify-content: center;}}</style>
+    align-items: center;}
+  
+ .tronsoft-logo{height: 40px;margin-left: -40px;
+}
+.tronsoft-logo {
+  height: 40px;
+  margin-left: -40px; /* Mantém no desktop */
+}
+  
+  @media (max-width: 768px){
+    .tronsoft-header-container
+    {
+      justify-content: center;
+    }
+  }
+
+</style>
 
 <script>
   window.addEventListener('scroll', function (){const header = document.getElementById('tronsoft-header');
@@ -358,7 +379,7 @@
       <div class="ts-hero-text">
 
         <h1>
-  Descubra o sistema de gestão ideal para o seu<br>
+  Descubra o sistema de gestão ideal para o seu negócio, seja ele<br>
   <span class="ts-static">negócio no setor </span>
   <span class="ts-animado"><span class="marca"></span><span id="segmento-texto"></span></span>
 </h1>
@@ -1203,18 +1224,48 @@ Além disso, você pode emitir documentos fiscais (NFC-e, SPED E XML) e acessar 
     }
 
     /* Responsivo */
-    @media (max-width: 992px) {
-      .tron-benefit {
-        width: calc(50% - 20px);
-      }
-    }
+@media (max-width: 992px) {
+  .tron-benefit {
+    width: 150%;
+    margin-left: 5%;
+    display: flex;
+
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+
 
     @media (max-width: 600px) {
-      .tron-benefit {
-        width: 100%;
-        flex-direction: row;
-      }
-    }
+  .tron-benefits-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tron-benefit {
+  width: 150%; /* ou 95% para dar uma margem */
+   margin-left: -25%; /* compensa os 50% extras (150% - 100%) / 2 */
+  display: flex;
+  align-items: center;
+  gap: 15px; /* diminui o espaço entre ícone e texto */
+  padding: 15px; /* reduz o preenchimento interno */
+  box-sizing: border-box;
+  text-align: left;
+}
+
+  .tron-benefit i {
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .tron-benefit p {
+    margin: 0;
+    word-break: break-word;
+    font-size: 15px;
+  }
+}
   </style>
 </head>
 <body>
@@ -1961,7 +2012,7 @@ Além disso, você pode emitir documentos fiscais (NFC-e, SPED E XML) e acessar 
       </div>
 
       <div class="dados">
-        <div><strong>27 anos</strong><br>De experiência no mercado regional</div>
+        <div><strong>27 anos</strong><br>De experiência no mercado nacional</div>
         <div><strong>+ de 6.500</strong><br>De clientes atendidos em todo o<br>estado do Brasil</div>
         <div><strong>+ de 9,0</strong><br>Em notas de avaliação de nossos<br>próprios clientes</div>
       </div>
