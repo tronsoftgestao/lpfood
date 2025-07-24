@@ -378,10 +378,10 @@ max-width: 1200px;
     <div class="ts-container">
       <div class="ts-hero-text">
 
-        <h1>
-  Descubra o sistema de gestão ideal para o seu negócio,<br>
-  <span class="ts-static">seja ele </span>
-  <span class="ts-animado"><span class="marca"></span><span id="segmento-texto"></span></span>
+      <h1>
+  Descubra o sistema de gestão ideal para o seu negócio no<br>
+  <span class="ts-static">setor food </span>
+  
 </h1>
 
 
@@ -1266,6 +1266,7 @@ Além disso, você pode emitir documentos fiscais (NFC-e, SPED E XML) e acessar 
     font-size: 15px;
   }
 }
+
   </style>
 </head>
 <body>
@@ -1286,10 +1287,10 @@ Além disso, você pode emitir documentos fiscais (NFC-e, SPED E XML) e acessar 
         </div>
         <p>
           Funcionamento<br>
-          100% <span class="status-text">
-            <span class="online"><strong>Online</strong></span>
-            <span class="offline"><strong>Offline</strong></span>
-          </span>
+
+        100% <strong>Offline/Online</strong>
+
+
         </p>
       </div>
 
@@ -1319,6 +1320,8 @@ Além disso, você pode emitir documentos fiscais (NFC-e, SPED E XML) e acessar 
 
 </body>
 </html>
+
+
 
 
 
@@ -1657,160 +1660,241 @@ Além disso, você pode emitir documentos fiscais (NFC-e, SPED E XML) e acessar 
 </html>
 
 
-
-<!-- planos -->
+<!-- planos novos -->
 
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Planos e Preços - Tronsoft</title>
+  <title>Planos Tronsoft</title>
   <style>
-    .pricing-section {
-      text-align: center;
+    .tron-pricing-section {
+      font-family: 'Arial', sans-serif;
+      background-color: #0f2b43;
+      color: #000;
       padding: 60px 20px;
-      background: #11293e;
-      border-top-left-radius: 32px;
+      box-sizing: border-box;
+ border-top-left-radius: 32px;
       border-top-right-radius: 32px;
       border-bottom-left-radius: 32px;
       border-bottom-right-radius: 32px;
-      position: relative;
-      z-index: 2;
     }
 
-    .pricing-section h2 {
-      font-size: 32px;
-      margin-bottom: 40px;
+    .tron-pricing-section h2 {
       color: #fff;
+      text-align: center;
+      margin-bottom: 10px;
+font-size: 36px;
     }
 
-    .pricing-cards {
+    .tron-pricing-section p.description {
+      color: #fff;
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 40px;
+      font-size: 18px;
+    }
+
+    .tron-plans {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
-      gap: 30px;
-      max-width: 1200px;
-      margin: 0 auto;
+      gap: 20px;
+      flex-wrap: wrap;
     }
 
-    .pricing-card {
-      background: #fafafa;
-      border-radius: 10px;
-      padding: 30px 25px;
-      width: 300px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    .tron-plan {
+      background-color: #f4f4f4;
+      border-radius: 12px;
+      width: 260px;
+      padding: 20px;
+      box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     }
 
-    .pricing-card h3 {
-      font-size: 20px;
-      margin-bottom: 20px;
+    .tron-plan.premium {
+      background-color: #e1f7ff;
+      border: 2px solid #00b4ff;
+      position: relative;
     }
 
-    .pricing-card ul {
-      text-align: left;
-      padding-left: 0;
-      list-style: none;
-      margin-bottom: 20px;
-    }
-
-    .pricing-card li {
-      margin: 8px 0;
-    }
-
-    .price {
-      font-size: 24px;
-      margin: 10px 0;
-    }
-
-    .price strong {
-      font-size: 32px;
-    }
-
-    .note {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 15px;
-    }
-
-    .btn {
-      display: inline-block;
-      margin-top: auto;
-      padding: 10px 20px;
-      background-color: #18ace2;
+    .tron-plan.premium::before {
+      content: "PLANO PREMIUM";
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #00b4ff;
       color: #fff;
-      text-decoration: none;
-      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 12px;
+      border-radius: 5px 5px 0 0;
+    }
+
+    .tron-plan h3 {
+      font-size: 18px;
+      margin: 0 0 8px;
       font-weight: bold;
     }
 
-    input[type="text"] {
-      padding: 8px 10px;
-      margin: 10px 0 20px;
-      width: 100%;
+    .tron-plan .plan-desc {
+      font-size: 13px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .tron-plan ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px;
+      font-size: 13px;
+    }
+
+    .tron-plan ul li {
+      margin-bottom: 8px;
+    }
+
+    .tron-plan ul li::before {
+      content: "✔";
+      color: green;
+      margin-right: 5px;
+    }
+
+    .tron-price {
+      margin-bottom: 10px;
+      font-weight: bold;
+      font-size: 20px;
+      color: #000;
+    }
+
+    .tron-subprice {
+      font-size: 12px;
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    .tron-plan button {
+      background-color: #00b4ff;
+      color: white;
+      border: none;
+      padding: 10px;
       border-radius: 5px;
-      border: 1px solid #ccc;
+      font-weight: bold;
+      cursor: pointer;
+font-size: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .tron-plans {
+        flex-direction: column;
+        align-items: center;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="pricing-section">
-    <h2><strong>Mensalidade que <span style="color: #18ace2;">cabe no seu bolso</span></strong></h2>
+  <section class="tron-pricing-section">
+    <h2>Preços e planos</h2>
+    <p class="description"><strong>
+      Experimente grátis e escolha o plano ideal para você.</strong><br><br>
+      Unifique <strong>tudo</strong> na sua empresa: PDV, financeiro completo, estoque, integração com balanças,<br>
+      comandas eletrônicas, POS e delivery — <strong>tudo conforme as suas necessidades.</strong>
+    </p>
 
-    <div class="pricing-cards">
-      <!-- Plano Grátis -->
-      <div class="pricing-card">
-        <h3>Teste Grátis</h3>
+    <div class="tron-plans">
+      <!-- TronPDV -->
+      <div class="tron-plan">
+        <h3>Sistema TronPDV</h3>
+        <p class="plan-desc">Para quem está começando, mas quer uma gestão robusta e estratégica para crescer de forma completa.</p>
         <ul>
-          <li>✓ Suporte 24h humanizado</li>
-          <li>✓ PDV/Frente de Caixa + Mesas e Balcão</li>
-          <li>✓ Ficha Técnica</li>
-          <li>✓ Controle de Estoque</li>
-          <li>✓ Controle Financeiro</li>
-          <li>✓ Comanda Digital</li>
-          <li>✓ Maquininha POS</li>
-          <li>✓ Fiscal + NFC-e</li>
-          <li>✓ KDS</li>
-          <li>✓ Integração com Ifood</li>
-          <li>✓ Pagamento Online</li>
-          <li>✓ Sistema de Delivery Completo</li>
+          <li>Venda offline</li>
+          <li>PDV / Frente de Caixa</li>
+          <li>Integração com impressoras</li>
+          <li>Aceita PIX, cartão de débito e crédito e vale alimentação</li>
+          <li>Importação de XML</li>
+          <li>Compatível com maquininha, PC e tablet</li>
+          <li>Catálogo Online</li>
+          <li>Menu digital</li>
+          <li>Integração com iFood</li>
         </ul>
-        <p class="price">R$ <strong>0,00</strong> <span>/mês</span></p>
-        <p class="note">* Primeiro Mês </p>
-        <a href="#" class="btn abrir-formulario">Teste Grátis</a>
+
+        <div class="tron-price">R$ 0,00<div class="tron-subprice"><br>Primeiro mês</div></div>
+
+        <div class="tron-subprice"><br>*Plano a partir de R$120,00</div>
+        <button>Teste grátis</button>
       </div>
 
-      <!-- Estimativa baseada no faturamento -->
-      <div class="pricing-card">
-        <h3>Ainda vende pouco?</h3>
+      <!-- Apptron -->
+      <div class="tron-plan">
+        <h3>Sistema Apptron</h3>
+        <p class="plan-desc">Nosso sistema tem tudo o que você procura para uma gestão completa no delivery.</p>
         <ul>
-          <li>✓ Temos um desconto especial para você!</li>
-          <li>✓ Com todos os benefícios inclusos</li>
+          <li>Venda offline</li>
+          <li>PDV / Frente de Caixa</li>
+          <li>Integração com impressoras</li>
+          <li>Aceita PIX, cartão de débito e crédito e vale alimentação</li>
+          <li>Importação de XML</li>
+          <li>Compatível com maquininha, PC e tablet</li>
+          <li>Catálogo Online</li>
+          <li>Menu digital</li>
+          <li>Integração com iFood</li>
         </ul>
-        <label for="faturamento">Digite o faturamento esperado</label>
-        <input type="text" id="faturamento" placeholder="Ex: R$ 2.000,00">
-        <a href="#" class="btn abrir-formulario">Calcular e Testar Grátis</a>
-        <p class="note">* Primeiro Mês</p>
+
+        <div class="tron-price">R$ 0,00<div class="tron-subprice"><br>Primeiro mês</div></div>
+
+        <div class="tron-subprice"><br>*Plano a partir de R$120,00</div>
+        <button>Teste grátis</button>
+      </div>
+
+      <!-- WebFood -->
+      <div class="tron-plan">
+        <h3>Sistema WebFood</h3>
+        <p class="plan-desc">ERP 100% online para quem tem um negócio mais robusto e quer tudo em um único sistema.</p>
+        <ul>
+          <li>Venda offline</li>
+          <li>PDV / Frente de Caixa</li>
+          <li>Integração com impressoras</li>
+          <li>Aceita PIX, cartão de débito e crédito e vale alimentação</li>
+          <li>Importação de XML</li>
+          <li>Compatível com maquininha, PC e tablet</li>
+          <li>Catálogo Online</li>
+          <li>Menu digital</li>
+          <li>Integração com iFood</li>
+        </ul>
+        <div class="tron-price">R$ 0,00<div class="tron-subprice"><br>Primeiro mês</div></div>
+        <div class="tron-subprice"><br>*Plano a partir de R$165,00</div>
+        <button>Teste grátis</button>
+      </div>
+
+      <!-- TronSolution -->
+      <div class="tron-plan premium">
+        <h3>Sistema TronSolution</h3>
+        <p class="plan-desc">Nosso sistema premium reúne toda a operação do seu estabelecimento em um só lugar, com integrações e todos os setores a um clique.</p>
+        <ul>
+          <li>Venda offline</li>
+          <li>PDV / Frente de Caixa</li>
+          <li>Integração com impressoras</li>
+          <li>Aceita PIX, cartão de débito e crédito e vale alimentação</li>
+          <li>Importação de XML</li>
+          <li>Compatível com maquininha, PC e tablet</li>
+          <li>Catálogo Online</li>
+          <li>Menu digital</li>
+          <li>Integração com iFood</li>
+        </ul>
+        <div class="tron-price">R$ 0,00<div class="tron-subprice"><br>Primeiro mês</div></div>
+        <div class="tron-subprice"><br>*Plano a partir de R$255,00</div>
+        <button>Teste grátis</button>
       </div>
     </div>
-  </div>
-
-  <script>
-    document.getElementById('faturamento').addEventListener('keydown', function(e){
-      if (e.key === 'Enter'){
-        e.preventDefault();
-        const popupBtn = this.closest('.pricing-card').querySelector('.abrir-formulario');
-        if (popupBtn) popupBtn.click();
-      }
-    });
-  </script>
+  </section>
 
 </body>
 </html>
+
 
 
 <!-- quem somos -->
