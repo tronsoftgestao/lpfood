@@ -17,6 +17,9 @@
     overflow: hidden;
     font-family: Arial, sans-serif;
   }
+  .zap-body {
+  padding: 15px 25px 15px 15px; /* topo, direita, baixo, esquerda */
+}
 
   .zap-header {
     background-color: #075e54;
@@ -59,6 +62,7 @@
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 14px;
+    box-sizing: border-box;
   }
 
   #zap-form button {
@@ -86,7 +90,7 @@
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/2048px-WhatsApp.svg.png" alt="avatar">
     <div>
       <strong>Tronsoft</strong><br>
-      <span>Online</span>
+      <span>Online - Horário comercial</span>
     </div>
   </div>
   <div class="zap-body">
@@ -389,7 +393,7 @@ max-width: 1200px;
         <button class="ts-btn" id="tronsoft-open-popup">Fale com um especialista</button>
       </div>
       <div class="ts-hero-image">
-        <img src=" https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/boates-e-pubs-3-dWxvNxn5XxteOlEz.png" alt="Ilustração Tronsoft">
+        <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/boates-e-pubs-19-m6LbOZMX6BuLQ5GO.png" alt="Ilustração Tronsoft">
       </div>
     </div>
   </div>
@@ -1659,8 +1663,9 @@ Além disso, você pode emitir documentos fiscais (NFC-e, SPED E XML) e acessar 
 </body>
 </html>
 
-
 <!-- planos novos -->
+
+
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -1670,22 +1675,18 @@ Além disso, você pode emitir documentos fiscais (NFC-e, SPED E XML) e acessar 
   <title>Planos Tronsoft</title>
   <style>
     .tron-pricing-section {
-      font-family: 'Arial', sans-serif;
-      background-color: #0f2b43;
-      color: #000;
       padding: 60px 20px;
-      box-sizing: border-box;
- border-top-left-radius: 32px;
-      border-top-right-radius: 32px;
-      border-bottom-left-radius: 32px;
-      border-bottom-right-radius: 32px;
+      background: #11293e;
+      border-radius: 32px;
+      position: relative;
+      z-index: 2;
     }
 
     .tron-pricing-section h2 {
       color: #fff;
       text-align: center;
       margin-bottom: 10px;
-font-size: 36px;
+      font-size: 36px;
     }
 
     .tron-pricing-section p.description {
@@ -1701,28 +1702,28 @@ font-size: 36px;
       justify-content: center;
       gap: 20px;
       flex-wrap: wrap;
+      align-items: stretch;
     }
 
     .tron-plan {
       background-color: #f4f4f4;
       border-radius: 12px;
-      width: 260px;
+      width: 280px;
       padding: 20px;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      position: relative;
     }
 
     .tron-plan.premium {
       background-color: #e1f7ff;
       border: 2px solid #00b4ff;
-      position: relative;
     }
 
     .tron-plan.premium::before {
-      content: "PLANO PREMIUM";
+      content: "SISTEMA PREMIUM";
       position: absolute;
       top: -12px;
       left: 50%;
@@ -1732,6 +1733,48 @@ font-size: 36px;
       padding: 3px 10px;
       font-size: 12px;
       border-radius: 5px 5px 0 0;
+    }
+
+    .slide-wrapper {
+      width: 100%;
+      height: 140px;
+      overflow: hidden;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .slide-container {
+      display: flex;
+      width: 100%;
+      animation: slide 9s infinite;
+    }
+
+    .slide-container img {
+      width: 100%;
+      height: 140px;
+      object-fit: contain;
+    }
+
+    @keyframes slide {
+      0%   { transform: translateX(0); }
+      33%  { transform: translateX(0); }
+      36%  { transform: translateX(-100%); }
+      66%  { transform: translateX(-100%); }
+      69%  { transform: translateX(-200%); }
+      99%  { transform: translateX(-200%); }
+      100% { transform: translateX(0); }
+    }
+
+    .plan-content {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .plan-text {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     .tron-plan h3 {
@@ -1744,6 +1787,7 @@ font-size: 36px;
       font-size: 13px;
       margin-bottom: 15px;
       color: #333;
+      min-height: 50px;
     }
 
     .tron-plan ul {
@@ -1751,6 +1795,7 @@ font-size: 36px;
       padding: 0;
       margin: 0 0 20px;
       font-size: 13px;
+      flex-grow: 1;
     }
 
     .tron-plan ul li {
@@ -1764,7 +1809,6 @@ font-size: 36px;
     }
 
     .tron-price {
-      margin-bottom: 10px;
       font-weight: bold;
       font-size: 20px;
       color: #000;
@@ -1773,7 +1817,7 @@ font-size: 36px;
     .tron-subprice {
       font-size: 12px;
       color: #333;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
 
     .tron-plan button {
@@ -1784,116 +1828,182 @@ font-size: 36px;
       border-radius: 5px;
       font-weight: bold;
       cursor: pointer;
-font-size: 15px;
-    }
-
-    @media (max-width: 768px) {
-      .tron-plans {
-        flex-direction: column;
-        align-items: center;
-      }
+      font-size: 15px;
     }
   </style>
 </head>
 <body>
 
-  <section class="tron-pricing-section">
-    <h2>Preços e planos</h2>
-    <p class="description"><strong>
-      Experimente grátis e escolha o plano ideal para você.</strong><br><br>
-      Unifique <strong>tudo</strong> na sua empresa: PDV, financeiro completo, estoque, integração com balanças,<br>
-      comandas eletrônicas, POS e delivery — <strong>tudo conforme as suas necessidades.</strong>
-    </p>
+<section class="tron-pricing-section">
+  <h2>Sistemas e preços</h2>
+  <p class="description"><strong>
+    Experimente grátis e escolha o sistema ideal para você.</strong><br><br>
+    Unifique <strong>tudo</strong> na sua empresa: PDV, financeiro completo, estoque, integração com balanças,<br>
+    comandas eletrônicas, POS e delivery — <strong>tudo conforme as suas necessidades.</strong>
+  </p>
 
-    <div class="tron-plans">
-      <!-- TronPDV -->
-      <div class="tron-plan">
-        <h3>Sistema TronPDV</h3>
-        <p class="plan-desc">Para quem está começando, mas quer uma gestão robusta e estratégica para crescer de forma completa.</p>
-        <ul>
-          <li>Venda offline</li>
-          <li>PDV / Frente de Caixa</li>
-          <li>Integração com impressoras</li>
-          <li>Aceita PIX, cartão de débito e crédito e vale alimentação</li>
-          <li>Importação de XML</li>
-          <li>Compatível com maquininha, PC e tablet</li>
-          <li>Catálogo Online</li>
-          <li>Menu digital</li>
-          <li>Integração com iFood</li>
-        </ul>
+  <div class="tron-plans">
 
-        <div class="tron-price">R$ 0,00<div class="tron-subprice"><br>Primeiro mês</div></div>
+    <!-- CARD 1 -->
 
-        <div class="tron-subprice"><br>*Plano a partir de R$120,00</div>
-        <button>Teste grátis</button>
+    <div class="tron-plan">
+      <div class="slide-wrapper">
+        <div class="slide-container">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/merci-7-AMq83nLNw2I56OOv.png">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/merci-8-mjEGe2r7bkso9bwE.png">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/merci-5-AR03OJvw40hXBVxZ.png">
+        </div>
       </div>
 
-      <!-- Apptron -->
-      <div class="tron-plan">
-        <h3>Sistema Apptron</h3>
-        <p class="plan-desc">Nosso sistema tem tudo o que você procura para uma gestão completa no delivery.</p>
-        <ul>
-          <li>Venda offline</li>
-          <li>PDV / Frente de Caixa</li>
-          <li>Integração com impressoras</li>
-          <li>Aceita PIX, cartão de débito e crédito e vale alimentação</li>
-          <li>Importação de XML</li>
-          <li>Compatível com maquininha, PC e tablet</li>
-          <li>Catálogo Online</li>
-          <li>Menu digital</li>
-          <li>Integração com iFood</li>
-        </ul>
-
-        <div class="tron-price">R$ 0,00<div class="tron-subprice"><br>Primeiro mês</div></div>
-
-        <div class="tron-subprice"><br>*Plano a partir de R$120,00</div>
-        <button>Teste grátis</button>
-      </div>
-
-      <!-- WebFood -->
-      <div class="tron-plan">
-        <h3>Sistema WebFood</h3>
-        <p class="plan-desc">ERP 100% online para quem tem um negócio mais robusto e quer tudo em um único sistema.</p>
-        <ul>
-          <li>Venda offline</li>
-          <li>PDV / Frente de Caixa</li>
-          <li>Integração com impressoras</li>
-          <li>Aceita PIX, cartão de débito e crédito e vale alimentação</li>
-          <li>Importação de XML</li>
-          <li>Compatível com maquininha, PC e tablet</li>
-          <li>Catálogo Online</li>
-          <li>Menu digital</li>
-          <li>Integração com iFood</li>
-        </ul>
-        <div class="tron-price">R$ 0,00<div class="tron-subprice"><br>Primeiro mês</div></div>
-        <div class="tron-subprice"><br>*Plano a partir de R$165,00</div>
-        <button>Teste grátis</button>
-      </div>
-
-      <!-- TronSolution -->
-      <div class="tron-plan premium">
-        <h3>Sistema TronSolution</h3>
-        <p class="plan-desc">Nosso sistema premium reúne toda a operação do seu estabelecimento em um só lugar, com integrações e todos os setores a um clique.</p>
-        <ul>
-          <li>Venda offline</li>
-          <li>PDV / Frente de Caixa</li>
-          <li>Integração com impressoras</li>
-          <li>Aceita PIX, cartão de débito e crédito e vale alimentação</li>
-          <li>Importação de XML</li>
-          <li>Compatível com maquininha, PC e tablet</li>
-          <li>Catálogo Online</li>
-          <li>Menu digital</li>
-          <li>Integração com iFood</li>
-        </ul>
-        <div class="tron-price">R$ 0,00<div class="tron-subprice"><br>Primeiro mês</div></div>
-        <div class="tron-subprice"><br>*Plano a partir de R$255,00</div>
-        <button>Teste grátis</button>
+      <div class="plan-content">
+        <div class="plan-text">
+          <h3>Sistema TronPDV</h3>
+          <p class="plan-desc">Para quem está começando, mas quer uma gestão robusta e estratégica para crescer de forma completa.</p>
+          <ul>
+            <li>Venda offline/online</li>
+            <li>Frente de caixa PDV</li>
+            <li>Integração com impressoras</li>
+            <li>Integração com balança</li>
+            <li>Aceita PIX, cartão de débito e crédito e vale alimentação</li>
+<li>Integração com as principais adquirentes do mercado.</li>
+            <li>Importação de XML</li>
+<li>Cadastro automático de produtos via código de barras</li>
+            <li>Disponível para Windows, Android (tablets e terminais de consulta) e iPadOS.</li>
+            <li>Menu digital</li>
+            <li>Integração com iFood</li>
+          </ul>
+        </div>
+        <div class="tron-price">R$ 0,00</div>
+        <div class="tron-subprice">Primeiro mês<br>*Plano a partir de R$120,00</div>
+        <button class="abrir-formulario">Teste grátis</button>
       </div>
     </div>
-  </section>
+
+    <!-- CARD 2 -->
+
+    <div class="tron-plan">
+      <div class="slide-wrapper">
+        <div class="slide-container">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/merci-9-YrDJ5aenMwtL0qjE.png">
+          <img src="https://apptron.com.br/images/atendente-virtual-whatsapp_1atendente-virtual-whatsapp.webp">
+          <img src="https://apptron.com.br/images/card%C3%A1pio-digital-qrcode-tablet_1card%C3%A1pio-digital-qrcode-tablet.webp">
+        </div>
+      </div>
+
+      <div class="plan-content">
+        <div class="plan-text">
+          <h3>Sistema Apptron</h3>
+          <p class="plan-desc">Nosso sistema tem tudo o que você procura para uma gestão completa no delivery.</p>
+          <ul>
+            <li>Robô para WhatsApp</li>
+            <li>Programa de fidelidade e avaliações</li>
+            <li>Módulo de notas fiscais</li>
+            <li>Integração com iFood</li>
+            <li>Múltiplas impressoras</li>
+            <li>Gestão de entregadores</li>
+<li>Preço dinânico por raio ou bairro</li>
+            <li>Pagamento online por PIX e cartão de crédito</li>
+            <li>Automação de aniversário e clientes inativos</li>
+            <li>Cupons de desconto e promoções</li>
+            <li>Controle de estoque e caixa</li>
+<li> Frente de caixa PDV</li>
+<li> Status de pedidos</li>
+            <li>Campanhas por WhatsApp, e-mail e mais</li>
+          </ul>
+        </div>
+        <div class="tron-price">R$ 0,00</div>
+        <div class="tron-subprice">Primeiro mês<br>*Plano a partir de R$120,00</div>
+        <button class="abrir-formulario">Teste grátis</button>
+      </div>
+    </div>
+
+
+    <!-- CARD 3 -->
+
+    <div class="tron-plan">
+      <div class="slide-wrapper">
+        <div class="slide-container">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/merci-2-YD0wbv34veHLDgn9.png">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/merci-3-mjEGe5R9xrT7PpVG.png">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/merci-11-dOqD1bzpWMS0XyqK.png">
+        </div>
+      </div>
+
+      <div class="plan-content">
+        <div class="plan-text">
+          <h3>Sistema WebFood</h3>
+          <p class="plan-desc">ERP 100% online para quem tem um negócio mais robusto e quer tudo em um único sistema.</p>
+          <ul>
+            <li>Frente de Caixa PDV</li>
+            <li>Painel do entregador</li>
+            <li>Controle de delivery</li>
+            <li>Entrada de notas</li>
+            <li>Integração com TEF</li>
+            <li>Controle de estoque</li>
+            <li>Controle de produção</li>
+            <li>Painel da cozinha e do bar</li>
+            <li>Comandas</li>
+            <li>Integração com Apps de delivery</li>
+          </ul>
+        </div>
+        <div class="tron-price">R$ 0,00</div>
+        <div class="tron-subprice">Primeiro mês<br>*Plano a partir de R$165,00</div>
+        <button class="abrir-formulario">Teste grátis</button>
+
+      </div>
+    </div>
+
+
+    <!-- CARD 4 -->
+
+    <div class="tron-plan premium">
+      <div class="slide-wrapper">
+        <div class="slide-container">
+
+
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/tronsolution-2-dJobDN1nLah6qX2r.png">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/tronsolution-1-mnlJO5aLobtELGbX.png">
+          <img src="https://assets.zyrosite.com/YbNy5xXDNPSNZ4N0/merci-10-mk3J1DWWB8ikrQjD.png">
+        </div>
+      </div>
+
+      <div class="plan-content">
+        <div class="plan-text">
+          <h3>Sistema TronSolution</h3>
+          <p class="plan-desc">Nosso sistema ERP premium reúne toda a operação do seu estabelecimento em um só lugar, com integrações e todos os setores a um clique.</p>
+          <ul>
+            <li>Operação completa de PDV/Caixa e delivery</li>
+            <li>Controle de estoque e financeiro</li>
+            <li>Seleciona produtos por categoria, descrição ou código</li>
+            <li>Geração e gestão de notas, incluindo XML e SPED</li>
+            <li>Nota fiscal eletrônica (NF-e)</li>
+            <li>Importação de arquivos padrão CNAB</li>
+            <li>BI para acompanhar movimentação de caixas e PDV</li>
+          <li>Operação com cartão de consumo individual</li>
+          <li>Venda balcão ou mesa</li>
+          <li>Cadastro de insumos, estoque com ficha técnica</li>
+          <li>Integração com Balança</li>
+<li>Retaguarda WEB</li>
+<li>TronPOS- PDV na maquininha ingrada ao caixa</li>
+<li>Venda de fichas, ingressos, fechamento de caixa e ticket</li>
+<li>TronComanda - Comanda eletrônica</li>
+<li>KDS</li>
+        </ul>
+        </div>
+
+
+        <div class="tron-price">R$ 0,00</div>
+        <div class="tron-subprice">Primeiro mês<br>*Plano a partir de R$255,00</div>
+        <button class="abrir-formulario">Teste grátis</button>
+      </div>
+    </div>
+
+  </div>
+</section>
 
 </body>
 </html>
+
 
 
 
